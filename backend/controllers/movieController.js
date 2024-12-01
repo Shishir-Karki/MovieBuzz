@@ -11,14 +11,13 @@ export const getMovieRecommendations = async (req, res) => {
         
         const prompt = `Act as a movie recommendation system. Based on this criteria: "${query}", suggest 5 movies.
                        Return the response ONLY as a JSON array of movie titles.
-                       Example format: ["Movie 1", "Movie 2", "Movie 3", "Movie 4", "Movie 5"], atleast 10 movies`;
+                       Example format: ["Movie 1", "Movie 2", "Movie 3", "Movie 4", "Movie 5"], atleast 14 movies`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
         
         try {
-            // Clean the response text and ensure it's valid JSON
             const cleanedText = text.replace(/```json|```/g, '').trim();
             const movieTitles = JSON.parse(cleanedText);
             
@@ -26,7 +25,6 @@ export const getMovieRecommendations = async (req, res) => {
                 throw new Error('Response is not an array');
             }
 
-            // Get movie details from TMDB
             const moviePromises = movieTitles.map(async (title) => {
                 try {
                     const searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=6edc27994f4bd91777c2f71dcfbe8b5c&query=${encodeURIComponent(title)}`;
